@@ -1,13 +1,12 @@
 <?php
 //the database connections
+namespace MVC\connexion;
 
-class Database
+
+class connexion
 {
 
-    private $host = DB_HOST;
-    private $user = DB_USER;
-    private $password = DB_PASSWORD;
-    private $db_name = DB_NAME;
+  
 
     private $pdo;
     private $stmt;

@@ -1,56 +1,61 @@
 <?php
+namespace app\Routes;
 
-class Router {
-    private $Controller = 'pages';
-    private $methode = 'index';
-    private $param=[];
+class Router
+{
+    private $controller = 'Page';
+    private $method = 'index';
+    private $param = [];
     public function __construct()
     {
-        $uri = $this->getUrl();    
-        if(isset($uri[0])){
-            if(file_exists('../app/controllers/'.ucwords($uri[0]).'Controller.php')){
+        $url = $this->getUrl();
 
-             $this->Controller =ucwords($uri[0]) ;
-                unset($uri[0]);
-
+        if (isset($url[0])) {
+            $controllerClass = ucwords($url[0]);
+          var_dump(PROJECT_ROOTS.'\\Controllers\\' . $controllerClass . 'Controller');
+            var_dump($controllerClass); 
+            $class=class_exists(PROJECT_ROOTS.'\\Controllers\\' . $controllerClass . 'Controller');
+          var_dump($class);
+            if ($class) {
+                $this->controller = $controllerClass;
             }
 
-        require_once PROJECT_ROOT .'\app\controlles'. $this->Controller;
+
+            $controllerClass = '\\app\\controllers\\' . $this->controller . 'Controller';
+            $this->controller = new $controllerClass;
+
+            if (isset($url[1])) {
+
+                if (method_exists($this->controller, $url[1])) {
+                    $this->method = $url[1];
+                }
+            }
+            if (!empty($_REQUEST)) {
+                $this->convertArray($_REQUEST);
+            } else {
+                $this->param = [];
+            }
         } else {
-            include '../resources/views/error404.php';
-            exit;
+            $this->controller = new $this->controller;
+        }
+        call_user_func_array([$this->controller, $this->method], $this->param);
+    }
+    private function getUrl()
+    {
+        $uri = $_SERVER['PATH_INFO'] ?? '/';
+        $uri = explode('/', trim($uri, '/'));
+return $uri;
+    }
+    private function convertArray($array)
+    {
+
+        foreach ($array as $value) {
+            array_push($this->param, $value);
         }
     }
-    public function getUrl()
+    private function getBasePaths()
     {
-        // var_dump($_REQUEST);
-
-
-        if (empty($_SERVER['REQUEST_URI'])) {
-            $uri = '';
-        } else {
-            $uri = $_SERVER['REQUEST_URI'];
-        }
-
-
-    $uri = explode('/', trim($uri, '/'));
-    //  var_dump( $uri);    
-        // }
-
-        return $uri;
+        $path = $_SERVER['HTTP_REFERER'];
+        header("Location: $path ");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>

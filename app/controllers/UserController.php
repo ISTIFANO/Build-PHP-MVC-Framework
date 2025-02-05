@@ -1,4 +1,5 @@
 <?php 
+namespace app\Controllers;
 
 class UserController{
 
@@ -11,6 +12,8 @@ class UserController{
         
     }
 }
+
+
 
 
 

@@ -1,5 +1,4 @@
 <?php 
-define('PROJECT_ROOT', dirname(dirname(__DIR__ . '/../')));
 
 define('SITE_NAME', 'your-site-name');
 
