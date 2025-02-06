@@ -1,16 +1,14 @@
 <?php
 
-namespace MVC\Model;
+namespace app\Model;
 
-use MVC\connexion\connexion;
-use MVC\interfaces\Crud as CrudInterface;
+use app\interfaces\Crud as CrudInterface;
 use PDO;
-
+use app\Core\config\Database;
 abstract class Crud implements CrudInterface
 {
     public function __construct()
     {
-        new connexion();
     }
 
     public function insert(string $table,array $data):int
@@ -19,15 +17,15 @@ abstract class Crud implements CrudInterface
         $values = implode(', ', array_fill(0, count($data), '?'));
 
         $sql = "insert into $table($columns) values ($values)";
-        $stmt = connexion::$pdo->prepare($sql);
+        $stmt = Database::getInstance()->getConnection()->prepare($sql);
         $stmt->execute(array_values($data));
 
-        return connexion::$pdo->lastInsertId();
+        return Database::getInstance()->getConnection()->lastInsertId();
     }
     public function select(string $table,int $id):object
     {
         $sql = "SELECT * FROM $table WHERE id = ?";
-        $stmt = connexion::$pdo->prepare($sql);
+        $stmt = Database::getInstance()->getConnection()->prepare($sql);
         $stmt->execute([$id]);
 
         return $stmt->fetch(PDO::FETCH_OBJ);
@@ -35,7 +33,7 @@ abstract class Crud implements CrudInterface
     public function selectAll(string $table):array
     {
         $sql = "SELECT * FROM $table";
-        $stmt = connexion::$pdo->prepare($sql);
+        $stmt = Database::getInstance()->getConnection()->prepare($sql);
         $stmt->execute();
 
         //return $stmt->fetch(PDO::FETCH_OBJ);
@@ -46,7 +44,7 @@ abstract class Crud implements CrudInterface
     {
         $setClause = implode(' = ?, ', array_keys($data)) . ' = ?';
         $sql = "UPDATE $table SET $setClause WHERE id = ?";
-        $stmt = connexion::$pdo->prepare($sql);
+        $stmt = Database::getInstance()->getConnection()->prepare($sql);
         $stmt->execute(array_merge(array_values($data), [$id]));
 
         return $stmt->rowCount();
@@ -55,7 +53,7 @@ abstract class Crud implements CrudInterface
     public function delete(string $table,int $id):int
     {
         $sql = "DELETE FROM $table WHERE id = ?";
-        $stmt = connexion::$pdo->prepare($sql);
+        $stmt = Database::getInstance()->getConnection()->prepare($sql);
         $stmt->execute([$id]);
 
         return $stmt->rowCount();

@@ -1,81 +1,69 @@
-<?php
-//the database connections
-namespace MVC\connexion;
+<?php 
+namespace app\Core\config;
 
+use Dotenv\Dotenv;
+use PDO;
+use PDOException;
 
-class connexion
-{
+class Database {
+    private static $servername;
+    private static $username;
+    private static $password;
+    private static $dbname;
+    private static $port;
+    private static $connexion;
+    private static $instance;
+    public static $counter = 0;
 
-  
+    public function __construct() {
+        $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../../../');
+        $dotenv->load();
 
-    private $pdo;
-    private $stmt;
+        self::$servername = $_ENV['DB_HOST'];
+        self::$username = $_ENV['DB_USERNAME'];
+        self::$password = $_ENV['DB_PASSWORD'];
+        self::$dbname = $_ENV['DB_DATABASE'];
+        self::$port = $_ENV['DB_PORT'];
 
-    public function __construct()
-    {
-        $dsn = 'mysqli:host=' . $this->host . "; dbname=" . $this->db_name;
-        try {
-            $this->pdo = new PDO($dsn, $this->user, $this->password);
-        } catch (PDOException $e) {
-            die("there is an issue: " . $e->getMessage());
-        }
-    }
+        if (!self::$connexion) {
+            try {
+                self::$connexion = new PDO(
+                    "pgsql:host=" . self::$servername . 
+                    ";port=" . self::$port . 
+                    ";dbname=" . self::$dbname,
+                    self::$username,
+                    self::$password
+                );
+                self::$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    public function __destruct()
-    {
-        if ($this->stmt !== null) {
-            $this->stmt = null;
-        }
-        if ($this->pdo !== null) {
-            $this->pdo = null;
-        }
-    }
-    public function query($sql)
-    {
-        $this->stmt = $this->pdo->prepare($sql);
-    }
-
-    public function bind($param, $value, $type = null)
-    {
-
-        if (is_null($type)) {
-            switch (true) {
-                case is_int($value):
-                    $type = pdo::PARAM_INT;
-                    break;
-                case is_bool($value):
-                    $type = pdo::PARAM_BOOL;
-                    break;
-                case is_null($value):
-                    $type = pdo::PARAM_NULL;
-                    break;
-                default:
-                    $type = pdo::PARAM_STR;
+                // echo "is succ";
+            } catch (PDOException $e) {
+                die("Connection failed: " . $e->getMessage());
             }
         }
-
-        $this->stmt->bindValue($param, $value, $type);
     }
-    public function execute()
-    {
-        $this->stmt->execute();
-    }
-     //fetch data
 
-     public function fetchAll()
-     {
-         $this->stmt->execute();
-         $results = $this->stmt->fetchAll();
- 
-         return $results;
-     }
- 
-     public function fetch()
-     {
-         $this->stmt->execute();
-         $result = $this->stmt->fetch();
- 
-         return $result;
-     }
- 
-} ?>
+    public static function getInstance() {
+
+        if (!self::$instance) {
+            self::$instance = new Database();
+            self::$counter++;
+        }
+        return self::$instance;
+    }
+
+    public function getConnection() {
+     
+        return self::$connexion;
+    }
+}
+
+
+$db = Database::getInstance()->getConnection();
+
+// if ($db) {
+//     echo "<h1>Database </h1>";
+// } else {
+//     echo "<h1>No Connection </h1>";
+// }
+?>

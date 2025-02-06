@@ -7,7 +7,7 @@ class ErrorController {
 
     public function index(){
 
-      echo 'this is the index action';
+      echo 'this is the Error action';
   }
 
 }
