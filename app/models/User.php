@@ -1,7 +1,8 @@
- <?php
+<?php
+namespace app\models;
 
-use app\Model\Crud;
-
+use app\models\Crud;
+use app\Core\config\Database;
 class User extends Crud {
     private $id;
     private $firstName;
@@ -70,6 +71,24 @@ class User extends Crud {
     {
         return $this->selectAll('users');
     }
+
+
+    public function login($username, $password){
+    
+            $this->setEmail($username);
+            
+            $this->setPassword($password);
+    
+            $stmt = Database::getInstance()->getConnection()->prepare("SELECT * FROM users WHERE email = :username AND password = :password");
+            $stmt->execute(['email' => $this->getEmail(), 'password' => $this->getPassword()]);
+            $user = $stmt->fetch();
+    
+            if ($user) {
+                $this->setId($user['id']);
+                return true;
+            }
+            return false;
+        }
     public function add(): void
     {
         
@@ -78,7 +97,6 @@ class User extends Crud {
             'firstName' => $this->firstName,
          'lastName' => $this->lastName, 
          'email' => $this->email, 
-         'lastName' => $this->lastName, 
         'password' => $this->password,
          'createdAt' => $this->createdAt]
         );

@@ -2,7 +2,7 @@
 namespace app\Routes;
 
 class Router {
-    private string $controller = 'app\controllers\homeController';
+    private string $controller = 'app\controllers\HomeController';
     private string $method = 'index';
     private array $params = array();
 
@@ -19,7 +19,7 @@ class Router {
         if (!empty($uri[0])) {
             $controller = ucwords($uri[0]) . 'Controller';
             $controller = "\\app\\Controllers\\" . $controller;
-    
+
             if (class_exists($controller)) {
                 $this->controller = $controller;
             } else {

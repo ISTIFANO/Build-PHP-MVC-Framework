@@ -1,10 +1,11 @@
 <?php
 
-namespace app\Model;
+namespace app\models;
 
 use app\interfaces\Crud as CrudInterface;
 use PDO;
 use app\Core\config\Database;
+
 abstract class Crud implements CrudInterface
 {
     public function __construct()
