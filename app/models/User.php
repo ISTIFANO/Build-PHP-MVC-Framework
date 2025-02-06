@@ -72,11 +72,9 @@ class User extends Crud {
         return $this->selectAll('users');
     }
 
-
     public function login($username, $password){
-    
-            $this->setEmail($username);
-            
+                $this->setEmail($username);
+
             $this->setPassword($password);
     
             $stmt = Database::getInstance()->getConnection()->prepare("SELECT * FROM users WHERE email = :username AND password = :password");

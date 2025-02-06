@@ -36,8 +36,6 @@ abstract class Crud implements CrudInterface
         $sql = "SELECT * FROM $table";
         $stmt = Database::getInstance()->getConnection()->prepare($sql);
         $stmt->execute();
-
-        //return $stmt->fetch(PDO::FETCH_OBJ);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
