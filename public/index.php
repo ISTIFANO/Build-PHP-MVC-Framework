@@ -8,6 +8,7 @@ use app\Routes\Router;
 use app\Core\config\Database;
 $core = new Router();
 $Database = new Database();
-var_dump($Database);
+
+require_once dirname(__DIR__) . '\app\views\pages\Home.php';
 
 ?>
